@@ -55,6 +55,7 @@ import {
   AlertTriangle,
   Info,
   Music,
+  QrCode,
 } from 'lucide-react';
 
 interface IconProps {
@@ -191,6 +192,8 @@ export const Icon: React.FC<IconProps> = ({ name, className = '', size = 18 }) =
       return <Info size={size} className={className} />;
     case 'music_note':
       return <Music size={size} className={className} />;
+    case 'qr_code_scanner':
+      return <QrCode size={size} className={className} />;
     default:
       return <Sparkles size={size} className={className} />;
   }

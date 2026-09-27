@@ -13,7 +13,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenOrganizerSubmit,
 }) => {
   return (
-    <footer className="w-full bg-[#FFFFFF] border-t border-[#DED5CC] py-10 mt-12 mb-16 md:mb-0">
+    <footer className="w-full bg-[#FFFFFF] border-t border-[#DED5CC] py-10 mt-12 mb-16 xl:mb-0">
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-[#665D60]">
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <NavratriLogo size="sm" showSubtitle={false} />

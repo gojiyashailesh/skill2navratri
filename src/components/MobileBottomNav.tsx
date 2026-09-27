@@ -15,7 +15,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   savedCount,
 }) => {
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#DED5CC] px-2 py-1.5 flex items-center justify-around shadow-lg">
+    <nav aria-label="Main navigation" className="xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#DED5CC] px-2 py-1.5 flex items-center justify-around shadow-lg">
       <button
         onClick={() => onTabChange('discover')}
         className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-colors cursor-pointer ${

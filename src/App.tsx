@@ -177,7 +177,7 @@ export default function App() {
       />
 
       {/* Main Tab View Controller */}
-      <main className="flex-1 w-full pt-[74px]">
+      <main className="flex-1 w-full pt-[var(--app-header-height)]">
         {currentTab === 'discover' && (
           <DiscoverView
             events={filteredEvents}

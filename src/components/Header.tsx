@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SUPPORTED_CITIES } from '../data/mockData';
 import { Icon } from './Icon';
 import { NavratriLogo } from './NavratriLogo';
@@ -28,167 +28,168 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleLanguage,
   selectedCity,
   onSelectCity,
-  searchQuery,
-  onSearchChange,
   onOpenProfile,
   onOpenStaffScanner,
   onOpenOrganizerSubmit,
 }) => {
   const [cityMenuOpen, setCityMenuOpen] = useState(false);
+  const cityPickerRef = useRef<HTMLDivElement>(null);
+  const cityButtonRef = useRef<HTMLButtonElement>(null);
+  const cityLabel = language === 'gu'
+    ? SUPPORTED_CITIES.find((city) => city.name === selectedCity)?.nameGu ?? selectedCity
+    : selectedCity;
+
+  useEffect(() => {
+    if (!cityMenuOpen) return;
+
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (!cityPickerRef.current?.contains(event.target as Node)) setCityMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setCityMenuOpen(false);
+        cityButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsideClick);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [cityMenuOpen]);
+
+  const tabs = [
+    { id: 'discover', label: 'Discover', labelGu: 'શોધો' },
+    { id: 'explore-map', label: 'Explore Map', labelGu: 'નકશો' },
+    { id: 'my-tickets', label: 'My Tickets', labelGu: 'મારા પાસ', count: ticketCount },
+    { id: 'saved', label: 'Saved', labelGu: 'સાચવેલ', count: savedCount },
+  ] as const;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#FFFFFF] border-b border-[#DED5CC] select-none">
-      <div className="h-[74px] max-w-[1240px] mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3 sm:gap-4">
-        {/* Brand & City Picker */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-          <NavratriLogo
-            size="sm"
-            onClick={() => onTabChange('discover')}
-            className="hover:opacity-95 transition-opacity"
-          />
+    <header className="fixed inset-x-0 top-0 z-50 h-[var(--app-header-height)] border-b border-[#DED5CC] bg-white select-none">
+      <div className="app-header-layout mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
+        <button
+          type="button"
+          onClick={() => onTabChange('discover')}
+          aria-label="Navratri home"
+          className="[grid-area:brand] w-fit min-w-0 rounded-lg text-left cursor-pointer hover:opacity-95 transition-opacity"
+        >
+          <NavratriLogo size="sm" compact />
+        </button>
 
-          <div className="h-5 w-px bg-[#DED5CC] mx-0.5 hidden sm:block"></div>
+        <div ref={cityPickerRef} className="relative [grid-area:city] w-fit min-w-0">
+          <button
+            ref={cityButtonRef}
+            type="button"
+            onClick={() => setCityMenuOpen((open) => !open)}
+            aria-label={`Select city: ${cityLabel}`}
+            aria-expanded={cityMenuOpen}
+            aria-controls="header-city-options"
+            className="flex h-9 items-center gap-1.5 rounded-full bg-[#F2ECE2] px-3 text-xs font-semibold whitespace-nowrap text-[#251F21] hover:bg-[#EAE1D3] transition-colors cursor-pointer"
+          >
+            <span>{cityLabel}</span>
+            <Icon name={cityMenuOpen ? 'expand_less' : 'expand_more'} size={16} className="shrink-0 text-[#665D60]" />
+          </button>
 
-          {/* City Selector Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setCityMenuOpen(!cityMenuOpen)}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-[#F2ECE2] text-[#251F21] text-xs sm:text-sm font-semibold hover:bg-[#EAE1D3] transition-colors cursor-pointer"
-              type="button"
-            >
-              <span>{language === 'gu' ? 'અમદાવાદ' : selectedCity}</span>
-              <Icon
-                name={cityMenuOpen ? 'expand_less' : 'expand_more'}
-                size={16}
-                className="text-[#665D60]"
-              />
-            </button>
-
-            {cityMenuOpen && (
-              <div className="absolute left-0 top-full mt-2 w-56 p-1.5 rounded-xl bg-white border border-[#DED5CC] shadow-xl z-50">
-                <div className="px-3 py-1.5 text-[11px] font-bold text-[#665D60] uppercase tracking-wider">
-                  Select Gujarat Region
-                </div>
-                {SUPPORTED_CITIES.map((city) => (
-                  <button
-                    key={city.id}
-                    onClick={() => {
-                      onSelectCity(city.name);
-                      setCityMenuOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left ${
-                      selectedCity === city.name
-                        ? 'bg-[#F7E9ED] text-[#7A2337] font-semibold'
-                        : 'text-[#251F21] hover:bg-[#FBF7F0]'
-                    }`}
-                  >
-                    <span>{language === 'gu' ? city.nameGu : city.name}</span>
-                    <span className="text-[10px] text-[#665D60]">
-                      {city.active ? `${city.activeVenues} events` : 'Upcoming'}
-                    </span>
-                  </button>
-                ))}
+          {cityMenuOpen && (
+            <div id="header-city-options" className="absolute left-0 top-full z-50 mt-2 w-56 max-w-[calc(100vw-32px)] rounded-xl border border-[#DED5CC] bg-white p-1.5 shadow-xl">
+              <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#665D60]">
+                Select Gujarat Region
               </div>
-            )}
-          </div>
+              {SUPPORTED_CITIES.map((city) => (
+                <button
+                  key={city.id}
+                  type="button"
+                  aria-pressed={selectedCity === city.name}
+                  onClick={() => {
+                    onSelectCity(city.name);
+                    setCityMenuOpen(false);
+                    cityButtonRef.current?.focus();
+                  }}
+                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors ${
+                    selectedCity === city.name
+                      ? 'bg-[#F7E9ED] text-[#7A2337] font-semibold'
+                      : 'text-[#251F21] hover:bg-[#FBF7F0]'
+                  }`}
+                >
+                  <span>{language === 'gu' ? city.nameGu : city.name}</span>
+                  <span className="text-[10px] text-[#665D60]">
+                    {city.active ? `${city.activeVenues} events` : 'Upcoming'}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Center Navigation Bar (Desktop) */}
-        <nav className="hidden md:flex items-center h-full gap-6">
-          <button
-            onClick={() => onTabChange('discover')}
-            className={`h-full flex items-center font-semibold text-sm transition-colors border-b-2 pt-1 cursor-pointer ${
-              currentTab === 'discover'
-                ? 'text-[#7A2337] border-[#7A2337]'
-                : 'text-[#665D60] border-transparent hover:text-[#251F21]'
-            }`}
-          >
-            {language === 'gu' ? 'શોધો (Discover)' : 'Discover'}
-          </button>
-
-          <button
-            onClick={() => onTabChange('explore-map')}
-            className={`h-full flex items-center font-semibold text-sm transition-colors border-b-2 pt-1 cursor-pointer ${
-              currentTab === 'explore-map'
-                ? 'text-[#7A2337] border-[#7A2337]'
-                : 'text-[#665D60] border-transparent hover:text-[#251F21]'
-            }`}
-          >
-            {language === 'gu' ? 'નકશો (Explore Map)' : 'Explore Map'}
-          </button>
-
-          <button
-            onClick={() => onTabChange('my-tickets')}
-            className={`h-full flex items-center font-semibold text-sm transition-colors border-b-2 pt-1 gap-1.5 cursor-pointer ${
-              currentTab === 'my-tickets'
-                ? 'text-[#7A2337] border-[#7A2337]'
-                : 'text-[#665D60] border-transparent hover:text-[#251F21]'
-            }`}
-          >
-            <span>{language === 'gu' ? 'પાસ (My Tickets)' : 'My Tickets'}</span>
-            {ticketCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-[#7A2337] text-white text-[11px] font-bold">
-                {ticketCount}
-              </span>
-            )}
-          </button>
-
-          <button
-            onClick={() => onTabChange('saved')}
-            className={`h-full flex items-center font-semibold text-sm transition-colors border-b-2 pt-1 gap-1.5 cursor-pointer ${
-              currentTab === 'saved'
-                ? 'text-[#7A2337] border-[#7A2337]'
-                : 'text-[#665D60] border-transparent hover:text-[#251F21]'
-            }`}
-          >
-            <span>{language === 'gu' ? 'સાચવેલ (Saved)' : 'Saved'}</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-[#F2ECE2] text-[#665D60] text-[11px] font-bold">
-              {savedCount}
-            </span>
-          </button>
+        <nav aria-label="Main navigation" className="[grid-area:navigation] hidden h-full min-w-0 items-center justify-center gap-5 xl:flex">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onTabChange(tab.id)}
+              aria-current={currentTab === tab.id ? 'page' : undefined}
+              className={`flex h-full items-center gap-1.5 border-b-2 pt-1 text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                currentTab === tab.id
+                  ? 'text-[#7A2337] border-[#7A2337]'
+                  : 'text-[#665D60] border-transparent hover:text-[#251F21]'
+              }`}
+            >
+              <span>{language === 'gu' ? tab.labelGu : tab.label}</span>
+              {'count' in tab && (tab.id === 'saved' || tab.count > 0) && (
+                <span className={`rounded-full px-1.5 text-[11px] font-bold ${tab.id === 'my-tickets' ? 'bg-[#7A2337] text-white' : 'bg-[#F2ECE2] text-[#665D60]'}`}>
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          ))}
         </nav>
 
-        {/* Right side utilities */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Host / Submit Event Button */}
+        <div className="[grid-area:tools] flex items-center justify-end gap-2">
           {onOpenOrganizerSubmit && (
             <button
+              type="button"
               onClick={onOpenOrganizerSubmit}
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#DED5CC] text-[#7A2337] hover:bg-[#FBF7F0] text-xs font-bold transition-colors cursor-pointer"
+              aria-label="Host Event"
               title="Organizers & Societies: Submit a Garba Event"
+              className="flex h-9 min-w-9 items-center justify-center gap-1.5 rounded-lg border border-[#DED5CC] px-2.5 text-xs font-bold whitespace-nowrap text-[#7A2337] hover:bg-[#FBF7F0] transition-colors cursor-pointer"
             >
-              <Icon name="add" size={14} />
-              <span>Host Event</span>
+              <Icon name="add" size={16} />
+              <span className="hidden min-[440px]:inline sm:hidden 2xl:inline">Host Event</span>
             </button>
           )}
-
-          {/* Gate Staff Turnstile Scanner Portal */}
           {onOpenStaffScanner && (
             <button
+              type="button"
               onClick={onOpenStaffScanner}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#1E2B4B] hover:bg-[#293A63] text-amber-300 text-xs font-bold transition-colors cursor-pointer shadow-xs"
+              aria-label="Gate Scanner"
               title="Gate Staff & Turnstile Validator App"
+              className="flex h-9 min-w-9 items-center justify-center gap-1.5 rounded-lg bg-[#1E2B4B] px-2.5 text-xs font-bold whitespace-nowrap text-amber-300 hover:bg-[#293A63] transition-colors cursor-pointer shadow-xs"
             >
-              <Icon name="qr_code_scanner" size={15} />
-              <span className="hidden sm:inline">Gate Scanner</span>
+              <Icon name="qr_code_scanner" size={16} />
+              <span className="hidden min-[440px]:inline sm:hidden 2xl:inline">Gate Scanner</span>
             </button>
           )}
+        </div>
 
-          {/* Language Toggle Button */}
+        <div className="[grid-area:utilities] flex shrink-0 items-center justify-end gap-2">
           <button
+            type="button"
             onClick={onToggleLanguage}
-            className="text-xs font-bold px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#DED5CC] hover:bg-[#FBF7F0] text-[#7A2337] transition-colors cursor-pointer"
+            aria-label={language === 'en' ? 'Switch to Gujarati' : 'Switch to English'}
             title="Switch Language (English / ગુજરાતી)"
+            className="h-9 rounded-lg border border-[#DED5CC] px-2 text-xs font-bold whitespace-nowrap text-[#7A2337] hover:bg-[#FBF7F0] transition-colors cursor-pointer"
           >
             {language === 'en' ? 'ગુજરાતી' : 'English'}
           </button>
-
-          {/* Profile Avatar */}
           <button
-            onClick={onOpenProfile}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#7A2337] hover:bg-[#651A2C] flex items-center justify-center flex-shrink-0 cursor-pointer shadow-xs transition-transform active:scale-95"
-            title="User Profile & Gate Policies"
             type="button"
+            onClick={onOpenProfile}
+            aria-label="User profile"
+            title="User Profile & Gate Policies"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#7A2337] hover:bg-[#651A2C] cursor-pointer shadow-xs transition-transform active:scale-95"
           >
             <Icon name="person" size={18} className="text-white" />
           </button>
@@ -197,4 +198,3 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
-

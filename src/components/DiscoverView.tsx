@@ -102,7 +102,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
                 ) : (
                   <span>
                     <span className="text-[#7A2337]">Aaje kya ramva javu che?</span>
-                    <span className="block text-2xl sm:text-3xl font-semibold text-[#665D60] mt-1 font-sans">
+                    <span className="block text-2xl sm:text-3xl hidden font-semibold text-[#665D60] mt-1 font-sans">
                       Where should I play Garba tonight?
                     </span>
                   </span>

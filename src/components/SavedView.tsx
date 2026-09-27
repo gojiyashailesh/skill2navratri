@@ -18,7 +18,7 @@ export const SavedView: React.FC<SavedViewProps> = ({
   language,
 }) => {
   return (
-    <div className="w-full min-h-[calc(100vh-72px)] bg-[#FBF7F0] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="w-full min-h-[calc(100dvh-var(--app-header-height))] bg-[#FBF7F0] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1000px] mx-auto flex flex-col gap-6">
         <div className="pb-2 border-b border-[#DED5CC] flex items-center justify-between">
           <div>

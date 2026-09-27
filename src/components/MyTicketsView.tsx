@@ -24,7 +24,7 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
   const displayedList = activeTab === 'upcoming' ? upcomingTickets : pastTickets;
 
   return (
-    <div className="w-full min-h-[calc(100vh-72px)] bg-[#FBF7F0] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="w-full min-h-[calc(100dvh-var(--app-header-height))] bg-[#FBF7F0] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1000px] mx-auto flex flex-col gap-6">
         {/* Header & Tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#DED5CC]">

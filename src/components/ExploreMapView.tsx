@@ -81,7 +81,7 @@ export const ExploreMapView: React.FC<ExploreMapViewProps> = ({
   };
 
   return (
-    <div className="relative w-full h-[calc(100vh-72px)] flex flex-col lg:flex-row overflow-hidden bg-[#FBF7F0]">
+    <div className="relative w-full h-[calc(100dvh-var(--app-header-height))] flex flex-col lg:flex-row overflow-hidden bg-[#FBF7F0]">
       {/* LEFT PANEL: Event selection, route preview, alternate venues */}
       <aside className="w-full lg:w-[440px] xl:w-[480px] h-full flex flex-col flex-shrink-0 bg-[#FFFFFF] shadow-xl z-20 overflow-hidden border-r border-[#DED5CC]">
         {/* Search & Contextual Header */}
@@ -149,7 +149,7 @@ export const ExploreMapView: React.FC<ExploreMapViewProps> = ({
         </div>
 
         {/* Scrollable Main Container */}
-        <div className="flex-1 overflow-y-auto p-4 pb-24 lg:pb-8 flex flex-col gap-4 bg-[#FBF7F0]">
+        <div className="flex-1 overflow-y-auto p-4 pb-24 xl:pb-8 flex flex-col gap-4 bg-[#FBF7F0]">
           {/* Primary Selected Event Card */}
           <div className="rounded-xl bg-[#FFFFFF] p-4 shadow-sm border border-[#DED5CC] flex flex-col gap-3">
             {/* Card Header & Badge */}
@@ -750,7 +750,7 @@ export const ExploreMapView: React.FC<ExploreMapViewProps> = ({
         )}
 
         {/* Bottom Floating Map Legend */}
-        <div className="absolute bottom-4 left-4 right-4 md:left-6 md:right-auto z-30 pointer-events-none">
+        <div className="absolute bottom-20 xl:bottom-4 left-4 right-4 md:left-6 md:right-auto z-30 pointer-events-none">
           <div className="pointer-events-auto p-3 rounded-xl bg-white/95 backdrop-blur-md shadow-lg border border-[#DED5CC] flex flex-wrap items-center gap-4 text-[#201A1C]">
             <div className="flex items-center gap-2 text-xs">
               <span className="w-5 h-1 rounded-full bg-[#293A63] inline-block"></span>

@@ -37,3 +37,40 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Keep the fixed header and page offsets in sync at every breakpoint. */
+:root {
+  --app-header-height: 109px;
+}
+
+.app-header-layout {
+  display: grid;
+  grid-template-areas:
+    "brand utilities"
+    "city tools";
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 64px 44px;
+  align-items: center;
+  column-gap: 12px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --app-header-height: 74px;
+  }
+
+  .app-header-layout {
+    height: 100%;
+    grid-template-areas: "brand city tools utilities";
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-rows: 1fr;
+  }
+}
+
+@media (min-width: 1280px) {
+  .app-header-layout {
+    grid-template-areas: "brand city navigation tools utilities";
+    grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+    column-gap: 16px;
+  }
+}
